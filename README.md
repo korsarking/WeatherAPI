@@ -76,11 +76,5 @@ gradle run
 ---------------------------------------
 
 
-OUTPUT EXAMPLE:
-
-City         | Date         | Min (C)   | Max (C)   | Humidity (%) | Wind (kph) | Wind Dir | Condition   
----------------------------------------------------------------------------------------------------------
-Chisinau     | 2025-09-02   | 17.3      | 29.4      | 45           | 23.1       | NW       | Sunny       
-Madrid       | 2025-09-02   | 19.2      | 31.5      | 30           | 18.6       | E        | Clear       
-Kyiv         | 2025-09-02   | 14.8      | 25.2      | 55           | 15.7       | W        | Partly cloudy
-Amsterdam    | 2025-09-02   | 13.0      | 22.8      | 65           | 20.4       | SW       | Cloudy      
+<img width="1043" height="207" alt="изображение" src="https://github.com/user-attachments/assets/ee946e6b-f51a-4f6d-bd34-b207c16823a1" />
+  
