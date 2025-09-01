@@ -22,16 +22,9 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
-}
-
-testing {
-    suites {
-        // Configure the built-in test suite
-        val test by getting(JvmTestSuite::class) {
-            // Use Kotlin Test test framework
-            useKotlinTest("2.2.0")
-        }
-    }
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    implementation(libs.kotlinx.datetime)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -43,5 +36,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.AppKt"
+    mainClass = "AppKt"
 }
