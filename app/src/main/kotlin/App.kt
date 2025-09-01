@@ -7,10 +7,9 @@ data class Forecast(
     val date: String,
     val maxTemp: Float,
     val minTemp: Float,
-    val avgTemp: Float,
     val humidity: Int,
     val windKph: Float,
-    val precipMm: Float,
+    val windDir: String,
     val condition: String
 )
 
@@ -59,10 +58,9 @@ class App {
                             date = date,
                             maxTemp = day["maxtemp_c"].asFloat,
                             minTemp = day["mintemp_c"].asFloat,
-                            avgTemp = day["avgtemp_c"].asFloat,
                             humidity = day["avghumidity"].asInt,
                             windKph = day["maxwind_kph"].asFloat,
-                            precipMm = day["totalprecip_mm"].asFloat,
+                            windDir = json["current"].asJsonObject["wind_dir"].asString,
                             condition = day["condition"].asJsonObject["text"].asString
                         )
 
@@ -72,15 +70,21 @@ class App {
             }
         }
 
-        placeHolder.forEach { (city, forecast) ->
-            println("==== $city ====")
-            println("Date: ${forecast.date}")
-            println("Condition: ${forecast.condition}")
-            println("Temp: ${forecast.minTemp}\u00B0C .. ${forecast.maxTemp}\u00B0C (avg ${forecast.avgTemp}\u00B0C)")
-            println("Humidity: ${forecast.humidity}%")
-            println("Wind: ${forecast.windKph} kph")
-            println("Precipitation: ${forecast.precipMm} mm")
-            println()
+        println(
+            String.format(
+                "%-12s | %-12s | %-8s | %-8s | %-10s | %-9s | %-6s | %-12s",
+                "City", "Date", "Min (C)", "Max (C)", "Humidity (%)", "Wind (kph)", "Wind Dir", "Condition"
+            )
+        )
+        println("-".repeat(105))
+
+        placeHolder.forEach { (city, f) ->
+            println(
+                String.format(
+                    "%-12s | %-12s | %-8.1f | %-8.1f | %-12d | %-10.1f | %-8s | %-12s",
+                    city, f.date, f.minTemp, f.maxTemp, f.humidity, f.windKph, f.windDir, f.condition
+                )
+            )
         }
     }
 }
