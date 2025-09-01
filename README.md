@@ -43,14 +43,9 @@ Uses **Kotlinx Coroutines** to support asynchronous API calls
 ---
 
 ## Project Structure
-src/
-└── main/
-└── kotlin/
-├── App.kt # Application entry point
-└── helpers/
-├── DTOs.kt # Data models for API responses
-└── API.kt # Retrofit API + client setup
 
+
+<img width="453" height="182" alt="изображение" src="https://github.com/user-attachments/assets/84634bbd-ba88-4967-b450-d08478626610" />
 
 
 ---------------------------------------
