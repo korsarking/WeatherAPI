@@ -22,9 +22,10 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
-    implementation(libs.okhttp)
-    implementation(libs.gson)
+    implementation(libs.retrofit2)
+    implementation(libs.converter.gson)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.coroutines.core)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

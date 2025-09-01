@@ -1,22 +1,10 @@
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import com.google.gson.JsonParser
+import helpers.RetrofitClient
+import helpers.WeatherResponse
+import kotlinx.coroutines.*
 import kotlinx.datetime.*
 
-data class Forecast(
-    val date: String,
-    val maxTemp: Float,
-    val minTemp: Float,
-    val humidity: Int,
-    val windKph: Float,
-    val windDir: String,
-    val condition: String
-)
-
 class App {
-    fun run() {
-        val client = OkHttpClient()
-
+    fun run() = runBlocking {
         val now = Clock.System.now()
         val currentDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
         val nextDay = currentDateTime.date.plus(DatePeriod(days = 1))
@@ -27,48 +15,25 @@ class App {
         val aqi = "no"
         val alerts = "no"
 
-        val placeHolder = mutableMapOf<String, Forecast>()
-
-        cities.forEach { city ->
-
-            val url =
-                "https://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=$city&days=$days&dt=$nextDay&aqi=$aqi&alerts=$alerts"
-
-            val request = Request.Builder()
-                .url(url)
-                .build()
-
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    println("Error for $city: ${response.code}")
-                } else {
-                    val body = response.body?.string()
-                    if (body != null) {
-                        val json = JsonParser.parseString(body).asJsonObject
-
-                        val forecastDay = json["forecast"]
-                            .asJsonObject["forecastday"]
-                            .asJsonArray[0]
-                            .asJsonObject
-
-                        val date = forecastDay["date"].asString
-                        val day = forecastDay["day"].asJsonObject
-
-                        val forecast = Forecast(
-                            date = date,
-                            maxTemp = day["maxtemp_c"].asFloat,
-                            minTemp = day["mintemp_c"].asFloat,
-                            humidity = day["avghumidity"].asInt,
-                            windKph = day["maxwind_kph"].asFloat,
-                            windDir = json["current"].asJsonObject["wind_dir"].asString,
-                            condition = day["condition"].asJsonObject["text"].asString
-                        )
-
-                        placeHolder[city] = forecast
-                    }
+        val results = cities.map { city ->
+            async {
+                try {
+                    city to RetrofitClient.api.getForecast(
+                        apiKey = apiKey,
+                        city = city,
+                        days = days,
+                        date = nextDay.toString(),
+                        aqi = aqi,
+                        alerts = alerts
+                    )
+                } catch (e: Exception) {
+                    println("Error fetching forecast for $city: ${e.message}")
+                    null
                 }
             }
-        }
+        }.awaitAll()
+            .filterNotNull()
+            .toMap()
 
         println(
             String.format(
@@ -78,11 +43,15 @@ class App {
         )
         println("-".repeat(105))
 
-        placeHolder.forEach { (city, f) ->
+        results.forEach { (city, res) ->
+            val forecastDay = res.forecast.forecastday[0]
+            val day = forecastDay.day
+            val current = res.current
+
             println(
                 String.format(
                     "%-12s | %-12s | %-8.1f | %-8.1f | %-12d | %-10.1f | %-8s | %-12s",
-                    city, f.date, f.minTemp, f.maxTemp, f.humidity, f.windKph, f.windDir, f.condition
+                    city, forecastDay.date, day.mintemp_c, day.maxtemp_c, day.avghumidity, day.maxwind_kph, current.wind_dir, day.condition.text
                 )
             )
         }
@@ -90,6 +59,5 @@ class App {
 }
 
 fun main() {
-    val app = App()
-    app.run()
+    App().run()
 }
